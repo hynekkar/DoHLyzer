@@ -5,30 +5,30 @@ from collections import defaultdict
 from scapy.layers.tls.record import TLS, TLSApplicationData
 from scapy.sessions import DefaultSession
 
-from meter.features.context.packet_direction import PacketDirection
-from meter.features.context.packet_flow_key import get_packet_flow_key
-from meter.flow import Flow
-from meter.time_series.processor import Processor
+from features.context.packet_direction import PacketDirection
+from features.context.packet_flow_key import get_packet_flow_key
+from flow import Flow
+from time_series.processor import Processor
 
 EXPIRED_UPDATE = 40
 
 
 class FlowSession(DefaultSession):
     """Creates a list of network flows."""
-
+    _output = None;
     def __init__(self, *args, **kwargs):
         self.flows = {}
         self.csv_line = 0
 
         if self.output_mode == 'flow':
-            output = open(self.output_file, 'w')
-            self.csv_writer = csv.writer(output)
+            self._output = open(self.output_file, 'w')
+            self.csv_writer = csv.writer(self._output)
 
         self.packets_count = 0
 
         self.clumped_flows_per_label = defaultdict(list)
 
-        super(FlowSession, self).__init__(None, True, *args, **kwargs)
+        super(FlowSession, self).__init__(*args,**kwargs)
 
     def toPacketList(self):
         # Sniffer finished all the packets it needed to sniff.
@@ -56,7 +56,6 @@ class FlowSession(DefaultSession):
         # Creates a key variable to check
         packet_flow_key = get_packet_flow_key(packet, direction)
         flow = self.flows.get((packet_flow_key, count))
-
         # If there is no forward flow with a count of 0
         if flow is None:
             # There might be one of it in reverse
@@ -99,8 +98,8 @@ class FlowSession(DefaultSession):
                     break
 
         flow.add_packet(packet, direction)
-
-        if self.packets_count % 10000 == 0 or (flow.duration > 120 and self.output_mode == 'flow'):
+        print(self.packets_count)
+        if self.packets_count % 10 == 0 or (flow.duration > 120 and self.output_mode == 'flow'):
             print('Packet count: {}'.format(self.packets_count))
             self.garbage_collect(packet.time)
 
@@ -113,13 +112,14 @@ class FlowSession(DefaultSession):
         keys = list(self.flows.keys())
         for k in keys:
             flow = self.flows.get(k)
-
             if self.output_mode == 'flow':
                 if latest_time is None or latest_time - flow.latest_timestamp > EXPIRED_UPDATE or flow.duration > 90:
                     data = flow.get_data()
                     if self.csv_line == 0:
                         self.csv_writer.writerow(data.keys())
                     self.csv_writer.writerow(data.values())
+                    print(self.output_mode)
+                    self._output.flush()
                     self.csv_line += 1
                     del self.flows[k]
             else:

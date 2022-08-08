@@ -1,7 +1,7 @@
 import numpy
 from scipy import stats as stat
 
-from meter.features.context.packet_direction import PacketDirection
+from features.context.packet_direction import PacketDirection
 
 
 class ResponseTime:

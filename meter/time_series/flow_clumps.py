@@ -3,8 +3,8 @@ import os
 
 from scapy.layers.tls.record import TLSApplicationData
 
-from meter import constants
-from meter.features.context.packet_direction import PacketDirection
+import constants
+from features.context.packet_direction import PacketDirection
 
 
 class Clump:

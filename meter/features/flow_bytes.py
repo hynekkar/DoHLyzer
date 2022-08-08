@@ -1,8 +1,8 @@
 from scapy.layers.inet import IP, TCP
 from scapy.layers.l2 import Ether
 
-from meter.features.context.packet_direction import PacketDirection
-from meter.features.packet_time import PacketTime
+from features.context.packet_direction import PacketDirection
+from features.packet_time import PacketTime
 
 
 class FlowBytes:

@@ -1,12 +1,12 @@
 from enum import Enum
 from typing import Any
 
-from meter import constants
-from meter.features.context import packet_flow_key
-from meter.features.flow_bytes import FlowBytes
-from meter.features.packet_length import PacketLength
-from meter.features.packet_time import PacketTime
-from meter.features.response_time import ResponseTime
+import constants
+from features.context import packet_flow_key
+from features.flow_bytes import FlowBytes
+from features.packet_length import PacketLength
+from features.packet_time import PacketTime
+from features.response_time import ResponseTime
 
 
 class Flow:
