@@ -98,8 +98,7 @@ class FlowSession(DefaultSession):
                     break
 
         flow.add_packet(packet, direction)
-        print(self.packets_count)
-        if self.packets_count % 10 == 0 or (flow.duration > 120 and self.output_mode == 'flow'):
+        if self.packets_count % 10000 == 0 or (flow.duration > 120 and self.output_mode == 'flow'):
             print('Packet count: {}'.format(self.packets_count))
             self.garbage_collect(packet.time)
 
@@ -118,7 +117,6 @@ class FlowSession(DefaultSession):
                     if self.csv_line == 0:
                         self.csv_writer.writerow(data.keys())
                     self.csv_writer.writerow(data.values())
-                    print(self.output_mode)
                     self._output.flush()
                     self.csv_line += 1
                     del self.flows[k]

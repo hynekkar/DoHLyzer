@@ -2,6 +2,7 @@
 
 
 from features.context.packet_direction import PacketDirection
+from scapy.all import Ether
 
 
 def get_packet_flow_key(packet, direction) -> tuple:
@@ -29,15 +30,16 @@ def get_packet_flow_key(packet, direction) -> tuple:
         protocol = 'UDP'
     else:
         raise Exception('Only TCP protocols are supported.')
+    
 
     if direction == PacketDirection.FORWARD:
-        dest_ip = packet['IP'].dst
-        src_ip = packet['IP'].src
+        dest_ip = packet['IP'].dst if 'IP' in packet else packet['IPv6'].dst
+        src_ip = packet['IP'].src if 'IP' in packet else packet['IPv6'].src
         src_port = packet[protocol].sport
         dest_port = packet[protocol].dport
     else:
-        dest_ip = packet['IP'].src
-        src_ip = packet['IP'].dst
+        dest_ip = packet['IP'].src if 'IP' in packet else packet['IPv6'].src
+        src_ip = packet['IP'].dst if 'IP' in packet else packet['IPv6'].dst
         src_port = packet[protocol].dport
         dest_port = packet[protocol].sport
 

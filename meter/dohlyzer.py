@@ -7,6 +7,45 @@ from scapy.sendrecv import AsyncSniffer
 
 from flow_session import generate_session_class
 
+from scapy.layers.inet import TCP
+from scapy.layers.l2 import Ether
+from scapy.layers.l2 import Dot1Q
+from scapy.layers.inet6 import IPv6
+from scapy.layers.inet import IP
+
+from scapy.layers.inet import *
+from scapy.layers.inet6 import *
+from scapy.layers.l2 import *
+from scapy.layers.http import *
+from scapy.layers.dns import *
+from scapy.layers.tls import *
+from scapy.layers.ntp import *
+from scapy.layers.rtp import *
+from scapy.layers.smb import *
+from scapy.layers.sctp import *
+from scapy.layers.pptp import *
+from scapy.layers.ppp import *
+from scapy.layers.radius import *
+from scapy.layers.tftp import *
+
+import sys
+
+class TrillPacket(Packet):
+    name = "RTPDecPacket "
+    fields_desc = [
+        XBitField("version", 0, 2),
+        XBitField("hlim", 0, 6),
+        XBitField("mdest", 0, 1),
+        XBitField("res", 0, 7),
+        ShortField("inAddr", sys.maxsize),
+        ShortField("eqAddr", sys.maxsize),
+    ]
+
+
+bind_layers(Dot1Q, TrillPacket, type=0x22f3)
+bind_layers(TrillPacket, Ether)
+
+
 
 def create_sniffer(input_file, input_interface, output_mode, output_file):
     assert (input_file is None) ^ (input_interface is None)
